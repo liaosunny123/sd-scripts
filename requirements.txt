@@ -31,3 +31,11 @@ huggingface-hub==0.15.1
 open-clip-torch==2.20.0
 # for kohya_ss library
 -e .
+
+numpy~=1.26.1
+packaging~=23.2
+setuptools~=68.2.2
+fastapi~=0.104.0
+torch~=2.1.0
+tqdm~=4.66.1
+loguru~=0.7.2
