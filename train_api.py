@@ -36,7 +36,7 @@ async def train_network(websocket: WebSocket):
         )
         logger.info("Got task, starting train with data" + data["train_data"])
         parser = train_network_api.setup_parser()
-        output_dir = pathlib.Path.joinpath("../output", str(uuid.uuid4()))
+        output_name = str(uuid.uuid4())
         args = parser.parse_args()
         args.train_data_dir = pathlib.Path.joinpath("train", data["train_data"])
         args.resolution = data["resolution"]
@@ -45,6 +45,7 @@ async def train_network(websocket: WebSocket):
         args.pretrained_model = pathlib.Path.joinpath(
             "../sd-models", data["model"] + ".safetensors"
         )
+        args.output_name = output_name
         args = prepare_hardcoded_args(args, data["train_data"])
         await trainer.train(args, websocket)
         await websocket.send_text(
@@ -52,7 +53,7 @@ async def train_network(websocket: WebSocket):
                 {
                     "status": 3001,
                     "message": "Lora scripts has trained target object.",
-                    "output": pathlib.Path.joinpath(output_dir),
+                    "output": output_name,
                 }
             )
         )
@@ -87,6 +88,7 @@ def prepare_hardcoded_args(args, model):
     args.keep_tokens = 0
     args.xformers = True
     args.shuffle_caption = True
+    args.output_dir = '../output'
     return args
 
 
