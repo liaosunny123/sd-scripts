@@ -1198,12 +1198,12 @@ class NetworkTrainer:
                         epoch + 1,
                     )
 
-                    await websocket.send_text(
+                    await websocket.send(
                         json.dumps(
                             {
                                 "status": 2001,
-                                "message": "Lora scripts has finished one epoch.",
-                                "loss": loss_total,
+                                "message": "Lora scripts has saved one model.",
+                                "loss": loss_total / len(loss_list),
                                 "model_name": ckpt_name,
                                 "epoch": epoch + 1,
                             }
@@ -1234,12 +1234,12 @@ class NetworkTrainer:
                 unet,
             )
 
-            await websocket.send_text(
+            await websocket.send(
                 json.dumps(
                     {
                         "status": 2002,
                         "message": "Lora scripts has finished one epoch.",
-                        "loss": loss_total,
+                        "loss": loss_total / len(loss_list),
                         "epoch": epoch + 1,
                         "step": global_step,
 
