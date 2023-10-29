@@ -33,17 +33,8 @@ async def train_network(websocket, _path):
         )
         args.output_name = output_name
         args = prepare_hardcoded_args(args, data["train_data"])
-        await trainer.train(args, websocket)
-        await websocket.send(
-            json.dumps(
-                {
-                    "status": 3001,
-                    "message": "Lora scripts has trained target object.",
-                    "output": output_name,
-                }
-            )
-        )
-        await websocket.close()
+        await trainer.train(args, websocket, output_name)
+        print("Finished a task...")
         break
 
 
@@ -81,6 +72,6 @@ def prepare_hardcoded_args(args, model):
 
 
 if __name__ == "__main__":
-    start_server = websockets.serve(train_network, "localhost", 8998)
+    start_server = websockets.serve(train_network, "localhost", 8998, ping_interval=10000, ping_timeout=10000)
     asyncio.get_event_loop().run_until_complete(start_server)
     asyncio.get_event_loop().run_forever()

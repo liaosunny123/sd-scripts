@@ -193,7 +193,7 @@ class NetworkTrainer:
             unet,
         )
 
-    async def train(self, args, websocket):
+    async def train(self, args, websocket, output_name):
         session_id = random.randint(0, 2 ** 32)
         training_started_at = time.time()
         train_util.verify_training_args(args)
@@ -964,8 +964,10 @@ class NetworkTrainer:
                 accelerator.print(f"removing old checkpoint: {old_ckpt_file}")
                 os.remove(old_ckpt_file)
 
+        epoch_num = 0
         # training loop
         for epoch in range(num_train_epochs):
+            epoch_num = epoch_num + 1
             accelerator.print(f"\nepoch {epoch + 1}/{num_train_epochs}")
             current_epoch.value = epoch + 1
 
@@ -1246,6 +1248,19 @@ class NetworkTrainer:
                     }
                 )
             )
+
+            if epoch_num == num_train_epochs:
+                print("Existing the much epochs, end the connection...")
+                await websocket.send(
+                    json.dumps(
+                        {
+                            "status": 3001,
+                            "message": "Lora scripts has trained target object.",
+                            "output": output_name,
+                        }
+                    )
+                )
+                await websocket.close()
             # end of epoch
 
         # metadata["ss_epoch"] = str(num_train_epochs)
